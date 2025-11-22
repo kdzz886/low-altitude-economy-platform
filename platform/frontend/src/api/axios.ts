@@ -1,27 +1,19 @@
-import axios from 'axios'
-import { useUserStore } from '../store/user'
+// api/axios.ts
+import axios from "axios";
 
 const instance = axios.create({
-  baseURL: '/api',  // 代理到后端
-  timeout: 5000
-})
+  baseURL: "http://localhost:8080",
+  timeout: 5000,
+});
 
-// 请求拦截器
-instance.interceptors.request.use(config => {
-  const store = useUserStore()
-  if (store.token) {
-    config.headers.Authorization = store.token
+// 请求拦截器（如果你有 token）
+instance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 
-// 响应拦截器
-instance.interceptors.response.use(
-  res => res.data,
-  err => {
-    console.error('请求错误:', err)
-    return Promise.reject(err)
-  }
-)
+export default instance;
 
-export default instance
